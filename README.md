@@ -26,4 +26,5 @@ export default {
 ```
 
 Todo:
-- [ ] 吸附
+- [ ] 吸附  
+![image](https://github.com/lulusir/mpvue-slide/blob/master/images/demo.gif)
