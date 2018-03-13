@@ -10,17 +10,18 @@
   }
 </style>
 <template>
-   <view class="mpvue-slide">
-     <view
+   <div class="mpvue-slide">
+     <div
       class="slide-wrap"
       @touchstart="touchstart"
       @touchmove="touchmove"
       :animation="animationData">
       <slot></slot>
-     </view>
-   </view>
+     </div>
+   </div>
 </template>
 <script>
+  import { boundingClientRect, slideAnimate } from '../utils/adapter'
   export default {
     props: {
       speed: {
@@ -42,33 +43,42 @@
         },
         startX: 0,
         transX: 0,
+        wrapWidth: 0,
         slideWidth: 0
       }
     },
     methods: {
-      touchstart (e) {
-        // 获取startX
-        this.startX = e.mp.touches[0].clientX
+      async touchstart (e) {
+        // 获取startX 在mpvue中会有mp属性
+        if (e.mp !== undefined) {
+          this.startX = e.mp.touches[0].clientX
+        } else {
+          this.startX = e.touches[0].clientX
+        }
+
         // 获取wrap层的宽度
-        const query = wx.createSelectorQuery()
-        query.selectAll('.mpvue-slide>.slide-wrap').boundingClientRect((res) => {
-          this.wrapWidth = res[0].width
-        }).exec()
-        // 获取slide层宽度
-        query.selectAll('.mpvue-slide').boundingClientRect((res) => {
-          this.slideWidth = res[0].width
-        }).exec()
+        const $wrapRect = await boundingClientRect('.mpvue-slide>.slide-wrap')
+        this.wrapWidth = $wrapRect.width
+
+        const $slideRect = await boundingClientRect('.mpvue-slide')
+        this.slideWidth = $slideRect.width
       },
       touchmove (e) {
         // 获取distance
-        const moveX = e.mp.touches[0].clientX
+        let moveX = 0
+        if (e.mp !== undefined) {
+          moveX = e.mp.touches[0].clientX
+        } else {
+          moveX = e.touches[0].clientX
+        }
+
         const distance = moveX - this.startX
         this.startX = moveX
         this.transX = this.transX + distance
         // 边界检测
         this.transX = this.getSafeWidth(this.transX)
         // 创建动画 动画移动跟随distance
-        this.animationData = this.slideAnimate(this.speed, this.transX)
+        this.animationData = slideAnimate(this.speed, this.transX, '.mpvue-slide>.slide-wrap')
       },
       /**
        * @desc 获取偏移的安全距离
@@ -84,22 +94,6 @@
           return -safeWidth
         }
         return transX
-      },
-      /**
-       * @desc 生成滑动动画
-       * @param {number} speed - 动画运行时间
-       * @param {number} transX - 横向偏移量
-       * @return {object} animationData
-       */
-      slideAnimate (speed, transX) {
-        const animation = wx.createAnimation({
-          transformOrigin: 'left top',
-          timingFunction: 'linear',
-          duration: speed || 17,
-          delay: 0
-        })
-        animation.translateX(transX).step()
-        return animation.export()
       }
     }
   }
