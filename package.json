@@ -1,6 +1,6 @@
 {
   "name": "mpvue-slide",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "在小程序mpvue框架使用的侧滑组件",
   "main": "mpvue-slide.vue",
   "scripts": {
