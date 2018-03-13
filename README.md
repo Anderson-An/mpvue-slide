@@ -26,5 +26,6 @@ export default {
 ```
 
 Todo:
+- [x] 适配web端和小程序
 - [ ] 吸附  
 ![image](https://github.com/lulusir/mpvue-slide/blob/master/images/demo.gif)
