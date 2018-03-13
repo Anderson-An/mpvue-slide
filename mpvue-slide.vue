@@ -21,7 +21,7 @@
    </div>
 </template>
 <script>
-  import { boundingClientRect, slideAnimate } from '../utils/adapter'
+  import { boundingClientRect, slideAnimate } from './utils/adapter'
   export default {
     props: {
       speed: {
