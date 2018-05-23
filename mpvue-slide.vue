@@ -47,7 +47,15 @@
         slideWidth: 0
       }
     },
+    computed: {
+      transBoundary () {
+        return [- (this.wrapWidth - this.slideWidth), 0]
+      }
+    },
     methods: {
+      /**
+       * @description 设置startX， wrapWidth， slideWidth
+       */
       async touchstart (e) {
         // 获取startX 在mpvue中会有mp属性
         if (e.mp !== undefined) {
@@ -57,7 +65,7 @@
         }
 
         // 获取wrap层的宽度
-        const $wrapRect = await boundingClientRect('.mpvue-slide>.slide-wrap')
+        const $wrapRect = await boundingClientRect('.mpvue-slide > .slide-wrap')
         this.wrapWidth = $wrapRect.width
 
         const $slideRect = await boundingClientRect('.mpvue-slide')
@@ -76,22 +84,22 @@
         this.startX = moveX
         this.transX = this.transX + distance
         // 边界检测
-        this.transX = this.getSafeWidth(this.transX)
+        this.transX = this.getSafeValue(this.transX, this.transBoundary)
         // 创建动画 动画移动跟随distance
         this.animationData = slideAnimate(this.speed, this.transX, '.mpvue-slide>.slide-wrap')
       },
       /**
        * @desc 获取偏移的安全距离
        * @param {number} transX - 横向偏移量
-       * @return {transX} 安全的便宜距离
+       * @param {Array} boundary 偏移范围 例如[-100, 0]
+       * @return {number} 获取偏移的安全距离
        */
-      getSafeWidth (transX) {
-        const safeWidth = this.wrapWidth - this.slideWidth
-        if (transX > 0) {
-          return 0
+      getSafeValue (transX, boundary) {
+        if (transX > boundary[1]) {
+          return boundary[1]
         }
-        if (transX < -safeWidth) {
-          return -safeWidth
+        if (transX < boundary[0]) {
+          return boundary[0]
         }
         return transX
       }

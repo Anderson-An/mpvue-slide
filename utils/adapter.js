@@ -33,9 +33,9 @@ export function slideAnimate (speed, transX, selector) {
 
   // 非微信环境就操作dom
   const target = document.querySelector(selector)
-  target.style.transform = `translateX(${transX}px)`
-  target.style.transitionProperty = 'transform'
-  target.style.transitionDuration = `${speed || 17}ms`
-  target.style.transitionTimingFunction = `linear`
+  target.setAttribute(
+    'style',
+    `transform: translateX(${transX}px); transition: transform ${speed || 17}ms linear`
+  )
   return null
 }
